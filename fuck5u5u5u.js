@@ -1,18 +1,18 @@
 // ==UserScript==
 // @name         5u_video_auto_sign
 // @namespace    https://github.com/AJenpan/5u5u5u5ulove
-// @version      1.0
+// @version      0.1
 // @description  browse online class automatically
-// @author       songle
+// @author       zjd0112,ajen
 // @match        https://*.5u5u5u5u.com/studyOnLine*
 // @grant        none
 // ==/UserScript==
 'use strict';
 
 //必须填写
-const userName = '';
-const passWord = '';
-const softId = '';
+const userName = 'songle';
+const passWord = 'xxxxx';
+const softId = '123456';
 
 const url_chaojiying = 'https://upload.chaojiying.net/Upload/Processing.php';
 const codeType = '9104';
@@ -90,6 +90,36 @@ function convertImgToBase64(url_img, callback, outputFormat) {
         canvas = null;
     }
     img.src = url_img;
+}
+// check success
+function checkIsYes(){
+  var btn = document.querySelector(".xubox_yes");
+  if(btn){
+    btn.click();
+  }else{
+    console.log("未出现当前视频已学完！")
+  }
+}
+// 检查本集是否已经学完
+function checkNowVideoIsSuc(){
+  var frames = $(document).find('iframe');
+
+    if (frames.length == 0) {
+        return;
+    }
+    var theFrame = frames[1];
+    try{
+          let fhkj = theFrame.contentDocument.querySelector("body > div > div > div.cont > div:nth-child(4) > div");
+          if(fhkj){
+            fhkj.click();
+            return;
+          }
+    }catch(err){
+      console.log("未检测到完成按钮！");
+      return;
+    }
+
+    
 }
 
 // 获取验证码图片并上传,得到图片识别结果
@@ -270,6 +300,10 @@ window.onload = function () {
     getPermission();
     // 检查是否有验证码弹出
     timer_checkICode = setInterval(checkIdentifyCode, 6000);
+    //     检测是否看完本集
+    now_video_is_suc = setInterval(checkNowVideoIsSuc,6000);
+    //    当前视频时间是否已学完
+    now_video_issuc = setInterval(checkIsYes,6000);
     // 周期模拟按键,防止因长时间未操作,终止计时
     timer_pressKey = setInterval(simulateKey, 60000);
 }
